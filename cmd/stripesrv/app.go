@@ -6,7 +6,8 @@ import (
 	"github.com/stripe/stripe-go/paymentintent"
 	"net/http"
 
-	stripe "github.com/stripe/stripe-go/v71"
+	//stripe "github.com/stripe/stripe-go/v71"
+	stripe "github.com/stripe/stripe-go"
 )
 
 const (
