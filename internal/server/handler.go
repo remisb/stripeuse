@@ -1,13 +1,13 @@
 package serve
 
 import (
-"net/http"
-"os"
+	"net/http"
+	"os"
 
-"github.com/go-chi/chi"
+	"github.com/go-chi/chi"
 )
 
-func InitServeRoutes() http.Handler {
+func InitRoutes() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/*", staticHandler)
 	return r
@@ -15,10 +15,22 @@ func InitServeRoutes() http.Handler {
 
 func staticHandler(w http.ResponseWriter, r *http.Request) {
 	assetsDir := "dist"
-	if _, err := os.Stat("./" + assetsDir + r.URL.Path); os.IsNotExist(err) {
-		http.ServeFile(w, r, "./"+assetsDir+"/index.html")
-	} else {
-		http.ServeFile(w, r, "./"+assetsDir+r.URL.Path)
-	}
-}
+	filePath := "./" + assetsDir + r.URL.Path
+	_, err := os.Stat(filePath)
+	if os.IsNotExist(err) {
+		if r.URL.Path == "" || r.URL.Path == "/" {
+			http.ServeFile(w, r, "./"+assetsDir+"/index.html")
+			return
+		}
 
+		//w.Header().Set(HeaderContentType, MimeApplicationJSON)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte(""))
+		return
+	}
+	if r.URL.Path == "/" {
+		http.ServeFile(w, r, "./"+assetsDir+"/index.html")
+		return
+	}
+	http.ServeFile(w, r, filePath)
+}
